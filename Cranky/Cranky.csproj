@@ -19,6 +19,9 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
         <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>embedded</DebugType>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
