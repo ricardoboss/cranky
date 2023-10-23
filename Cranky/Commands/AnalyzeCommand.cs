@@ -52,24 +52,6 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         var analyzer = new Analyzer(projects);
         var result = await analyzer.AnalyzeAsync();
 
-        // var table = new Table();
-        // table.AddColumn("Message");
-        // table.AddColumn("File");
-        // table.AddColumn("Line");
-        // table.AddColumn("Column");
-        //
-        // foreach (var issue in result.Issues)
-        // {
-        //     table.AddRow(
-        //         issue.Message,
-        //         issue.Location.GetLineSpan().Path,
-        //         issue.Location.GetLineSpan().StartLinePosition.Line.ToString(),
-        //         issue.Location.GetLineSpan().StartLinePosition.Character.ToString()
-        //     );
-        // }
-        //
-        // AnsiConsole.Write(table);
-
         var documented = result.Total - result.Undocumented;
         var pct = (double)documented / result.Total;
         var color = pct switch
@@ -152,42 +134,6 @@ internal class Analyzer
             .ToList();
 
         return new(publicMembers, publicMembersWithoutDocumentation);
-    }
-
-    private static string GetIssueMessage(MemberDeclarationSyntax member)
-    {
-        return member switch
-        {
-            ClassDeclarationSyntax classDeclaration =>
-                $"Class '{classDeclaration.Identifier.Text}' is missing documentation.",
-            RecordDeclarationSyntax recordDeclaration =>
-                $"Record '{recordDeclaration.Identifier.Text}' is missing documentation.",
-            ConstructorDeclarationSyntax constructorDeclaration =>
-                $"Constructor '{constructorDeclaration.Identifier.Text}' is missing documentation.",
-            DestructorDeclarationSyntax destructorDeclaration =>
-                $"Destructor '{destructorDeclaration.Identifier.Text}' is missing documentation.",
-            EnumDeclarationSyntax enumDeclaration =>
-                $"Enum '{enumDeclaration.Identifier.Text}' is missing documentation.",
-            EnumMemberDeclarationSyntax enumMemberDeclaration =>
-                $"Enum member '{enumMemberDeclaration.Identifier.Text}' is missing documentation.",
-            EventDeclarationSyntax eventDeclaration =>
-                $"Event '{eventDeclaration.Identifier.Text}' is missing documentation.",
-            FieldDeclarationSyntax fieldDeclaration =>
-                $"Field '{fieldDeclaration.Declaration.Variables.First().Identifier.Text}' is missing documentation.",
-            IndexerDeclarationSyntax indexerDeclaration =>
-                $"Indexer '{indexerDeclaration.ThisKeyword.Text}' is missing documentation.",
-            InterfaceDeclarationSyntax interfaceDeclaration =>
-                $"Interface '{interfaceDeclaration.Identifier.Text}' is missing documentation.",
-            MethodDeclarationSyntax methodDeclaration =>
-                $"Method '{methodDeclaration.Identifier.Text}' is missing documentation.",
-            OperatorDeclarationSyntax operatorDeclaration =>
-                $"Operator '{operatorDeclaration.OperatorToken.Text}' is missing documentation.",
-            PropertyDeclarationSyntax propertyDeclaration =>
-                $"Property '{propertyDeclaration.Identifier.Text}' is missing documentation.",
-            StructDeclarationSyntax structDeclaration =>
-                $"Struct '{structDeclaration.Identifier.Text}' is missing documentation.",
-            _ => $"Member '{member}' is missing documentation.",
-        };
     }
 }
 
