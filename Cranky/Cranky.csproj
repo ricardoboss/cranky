@@ -7,6 +7,20 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Version>0.1.0</Version>
+        <Title>Cranky</Title>
+        <Authors>Ricardo Boss</Authors>
+        <Description>A tool to analyze the percentage of undocumented public APIs in your .NET project.</Description>
+        <Copyright>2023 Ricardo Boss</Copyright>
+        <PackageProjectUrl>https://github.com/ricardoboss/cranky</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/ricardoboss/cranky</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
+        <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="Buildalyzer" Version="5.0.1" />
       <PackageReference Include="ByteDev.DotNet" Version="7.2.1" />
