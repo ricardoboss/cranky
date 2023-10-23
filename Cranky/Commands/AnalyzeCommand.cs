@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Buildalyzer;
+﻿using Buildalyzer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -83,7 +82,7 @@ internal class Analyzer
 
         foreach (var project in projects)
         {
-            await foreach (var file in GetSourceFiles(project, cancellationToken))
+            foreach (var file in GetSourceFiles(project, cancellationToken))
             {
                 if (!file.Exists)
                     continue;
@@ -98,8 +97,7 @@ internal class Analyzer
         return new(total, undocumented);
     }
 
-    private static async IAsyncEnumerable<FileSystemInfo> GetSourceFiles(FileSystemInfo projectFile,
-        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    private static IEnumerable<FileSystemInfo> GetSourceFiles(FileSystemInfo projectFile, CancellationToken cancellationToken = default)
     {
         var manager = new AnalyzerManager();
         var analyzer = manager.GetProject(projectFile.FullName);
