@@ -16,7 +16,6 @@
         <Description>A tool to analyze the percentage of undocumented public APIs in your .NET project.</Description>
         <Copyright>2023 Ricardo Boss</Copyright>
         <PackageProjectUrl>https://github.com/ricardoboss/cranky</PackageProjectUrl>
-        <PackageReadmeFile>../README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/ricardoboss/cranky</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
