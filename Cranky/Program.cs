@@ -1,10 +1,6 @@
 ﻿using Cranky.Commands;
 using Spectre.Console.Cli;
 
-var app = new CommandApp<DefaultCommand>();
-app.Configure(c =>
-{
-    c.AddCommand<AnalyzeCommand>("analyze");
-});
+var app = new CommandApp<AnalyzeCommand>();
 
 return await app.RunAsync(args);

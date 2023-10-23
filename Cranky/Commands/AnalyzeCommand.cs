@@ -1,12 +1,11 @@
-﻿using Buildalyzer;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Spectre.Console;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using Cranky.Output;
 using Spectre.Console.Cli;
 
 namespace Cranky.Commands;
 
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 {
     internal sealed class Settings : CommandSettings
@@ -16,6 +15,15 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         [CommandOption("-s|--solution")]
         public FileInfo? SolutionFile { get; init; }
+
+        [CommandOption("--github")]
+        public bool Github { get; init; }
+
+        [CommandOption("--percentages")]
+        public string Percentages { get; init; } = "50,90";
+
+        [CommandOption("-e|--set-exit-code")]
+        public bool SetExitCode { get; init; }
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
@@ -23,19 +31,52 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         var projectFile = settings.ProjectFile;
         var solutionFile = settings.SolutionFile;
 
+        IOutput output;
+        if (settings.Github)
+            output = new GithubActionsOutput();
+        else
+            output = new AnsiConsoleOutput();
+
         if (projectFile is null && solutionFile is null)
         {
             // TODO: use current directory to find project or solution file
 
-            AnsiConsole.MarkupLine("[red]Error:[/] Either a project or solution file must be specified.");
+            output.WriteError("Either a project or solution file must be specified.");
+
             return 1;
         }
 
         if (projectFile is not null && solutionFile is not null)
         {
-            AnsiConsole.MarkupLine("[red]Error:[/] Only one of a project or solution file can be specified.");
+            output.WriteError("Only one of a project or solution file can be specified.");
+
             return 1;
         }
+
+        double minPct;
+        double okPct;
+        try
+        {
+            var percentages = settings.Percentages.Split(',').Select(int.Parse).ToArray();
+            if (percentages.Length != 2)
+            {
+                output.WriteError("Percentages must be specified as two comma-separated integers.");
+
+                return 1;
+            }
+
+            minPct = percentages[0] / 100.0;
+            okPct = percentages[1] / 100.0;
+        }
+        catch (Exception ex)
+        {
+            output.WriteError(ex.Message);
+
+            return 1;
+        }
+
+        output.WriteDebug($"Minimum documentation coverage: {minPct:P0}");
+        output.WriteDebug($"Acceptable documentation coverage: {okPct:P0}");
 
         // TODO implement for solutions
         var projects = solutionFile is not null
@@ -44,97 +85,42 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         if (!projects.Any())
         {
-            AnsiConsole.MarkupLine("[red]Error:[/] No solution or project file found.");
+            output.WriteError("No solution or project file found.");
+
             return 1;
         }
 
-        var analyzer = new Analyzer(projects);
+        var analyzer = new Analyzer(projects, output);
+
+        output.WriteInfo("Analyzing projects...");
+
+        var sw = Stopwatch.StartNew();
         var result = await analyzer.AnalyzeAsync();
+        sw.Stop();
+
+        output.WriteInfo($"Analyzed {result.Total} members in {sw.ElapsedMilliseconds}ms.");
 
         var documented = result.Total - result.Undocumented;
         var pct = (double)documented / result.Total;
-        var color = pct switch
-        {
-            >= 0.9 => "green",
-            >= 0.5 => "yellow",
-            _ => "red",
-        };
 
-        AnsiConsole.MarkupLine($"[bold]Documented API:[/] [bold {color}]{pct:P2}[/] ({documented}/{result.Total})");
+        output.WriteInfo($"Documentation coverage: {pct:P0} ({documented}/{result.Total})");
+
+        if (pct < minPct)
+        {
+            output.WriteError("Documentation coverage is below minimum threshold ❌");
+
+            return settings.SetExitCode ? 1 : 0;
+        }
+
+        if (pct < okPct)
+        {
+            output.WriteWarning("Documentation coverage is below acceptable threshold ⚠️");
+
+            return 0;
+        }
+
+        output.WriteInfo("Documentation coverage passed ✅");
 
         return 0;
     }
 }
-
-internal class Analyzer
-{
-    private readonly IEnumerable<FileSystemInfo> projects;
-
-    public Analyzer(IEnumerable<FileSystemInfo> projects)
-    {
-        this.projects = projects;
-    }
-
-    public async Task<AggregationResults> AnalyzeAsync(CancellationToken cancellationToken = default)
-    {
-        var total = 0;
-        var undocumented = 0;
-
-        foreach (var project in projects)
-        {
-            foreach (var file in GetSourceFiles(project, cancellationToken))
-            {
-                if (!file.Exists)
-                    continue;
-
-                var result = await AnalyzeFileAsync(file, cancellationToken);
-
-                total += result.PublicMembers.Count;
-                undocumented += result.UndocumentedMembers.Count;
-            }
-        }
-
-        return new(total, undocumented);
-    }
-
-    private static IEnumerable<FileSystemInfo> GetSourceFiles(FileSystemInfo projectFile, CancellationToken cancellationToken = default)
-    {
-        var manager = new AnalyzerManager();
-        var analyzer = manager.GetProject(projectFile.FullName);
-        var results = analyzer.Build();
-        foreach (var result in results)
-        {
-            foreach (var sourceFile in result.SourceFiles)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                yield return new FileInfo(sourceFile);
-            }
-        }
-    }
-
-    private static async Task<AnalysisResult> AnalyzeFileAsync(FileSystemInfo file, CancellationToken cancellationToken = default)
-    {
-        // 1. parse source file
-        var text = await File.ReadAllTextAsync(file.FullName, cancellationToken);
-        var tree = CSharpSyntaxTree.ParseText(text, cancellationToken: cancellationToken);
-        var root = tree.GetCompilationUnitRoot(cancellationToken);
-
-        // 2. get public api
-        var publicMembers = root.DescendantNodes()
-            .OfType<MemberDeclarationSyntax>()
-            .Where(m => m.Modifiers.Any(SyntaxKind.PublicKeyword))
-            .ToList();
-
-        // 3. get api documentation
-        var publicMembersWithoutDocumentation = publicMembers
-            .Where(m => !m.HasLeadingTrivia|| !m.GetLeadingTrivia().Any(t => t.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia)))
-            .ToList();
-
-        return new(publicMembers, publicMembersWithoutDocumentation);
-    }
-}
-
-internal record AnalysisResult(IReadOnlyList<MemberDeclarationSyntax> PublicMembers, IReadOnlyList<MemberDeclarationSyntax> UndocumentedMembers);
-
-internal record AggregationResults(int Total, int Undocumented);
