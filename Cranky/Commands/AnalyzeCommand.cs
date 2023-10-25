@@ -106,19 +106,16 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         output.WriteInfo($"Analyzed {result.Total} members in {sw.ElapsedMilliseconds}ms.");
 
-        var documented = result.Total - result.Undocumented;
-        var pct = (double)documented / result.Total;
+        output.WriteInfo($"Documentation coverage: {result.DocumentedPercentage:P0} ({result.Documented}/{result.Total})");
 
-        output.WriteInfo($"Documentation coverage: {pct:P0} ({documented}/{result.Total})");
-
-        if (pct < minPct)
+        if (result.DocumentedPercentage < minPct)
         {
             output.WriteError("Documentation coverage is below minimum threshold ❌");
 
             return settings.SetExitCode ? 1 : 0;
         }
 
-        if (pct < okPct)
+        if (result.DocumentedPercentage < okPct)
         {
             output.WriteWarning("Documentation coverage is below acceptable threshold ⚠️");
 
