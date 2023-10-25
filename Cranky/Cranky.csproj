@@ -21,8 +21,8 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.1.0</Version>
-        <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+        <Version>1.2.0</Version>
+        <PackageReleaseNotes>Added --json option and GitHub outputs</PackageReleaseNotes>
 
         <DebugSymbols>true</DebugSymbols>
         <DebugType>embedded</DebugType>
