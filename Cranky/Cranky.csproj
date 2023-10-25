@@ -21,8 +21,8 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.2.1</Version>
-        <PackageReleaseNotes>Fix documented percentage calculation in github output</PackageReleaseNotes>
+        <Version>1.2.2</Version>
+        <PackageReleaseNotes>Added percentage for display</PackageReleaseNotes>
 
         <DebugSymbols>true</DebugSymbols>
         <DebugType>embedded</DebugType>
