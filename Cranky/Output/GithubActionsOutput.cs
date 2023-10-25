@@ -69,4 +69,18 @@ public class GithubActionsOutput : IOutput
     {
         Write("debug", message);
     }
+
+    public void SetResult(AggregationResults result)
+    {
+        var (total, undocumented) = result;
+        var percent = total == 0 ? 0 : (int) Math.Round(undocumented / (double) total * 100);
+
+        Console.WriteLine($"::set-output name=total::{total}");
+        Console.WriteLine($"::set-output name=undocumented::{undocumented}");
+        Console.WriteLine($"::set-output name=percent::{percent}");
+    }
+
+    public void Dispose()
+    {
+    }
 }

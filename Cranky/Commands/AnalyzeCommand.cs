@@ -19,6 +19,9 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         [CommandOption("--github")]
         public bool Github { get; init; }
 
+        [CommandOption("--json")]
+        public bool Json { get; init; }
+
         [CommandOption("--percentages")]
         public string Percentages { get; init; } = "50,90";
 
@@ -31,11 +34,12 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         var projectFile = settings.ProjectFile;
         var solutionFile = settings.SolutionFile;
 
-        IOutput output;
-        if (settings.Github)
-            output = new GithubActionsOutput();
-        else
-            output = new AnsiConsoleOutput();
+        using IOutput output = settings switch
+        {
+            { Github: true } => new GithubActionsOutput(),
+            { Json: true } => new JsonOutput(),
+            _ => new AnsiConsoleOutput(),
+        };
 
         if (projectFile is null && solutionFile is null)
         {
@@ -97,6 +101,8 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         var sw = Stopwatch.StartNew();
         var result = await analyzer.AnalyzeAsync();
         sw.Stop();
+
+        output.SetResult(result);
 
         output.WriteInfo($"Analyzed {result.Total} members in {sw.ElapsedMilliseconds}ms.");
 

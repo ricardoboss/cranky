@@ -31,4 +31,12 @@ public class AnsiConsoleOutput : IOutput
     {
         AnsiConsole.MarkupLine("[grey]Debug:[/] {0}", message);
     }
+
+    public void SetResult(AggregationResults result)
+    {
+    }
+
+    public void Dispose()
+    {
+    }
 }

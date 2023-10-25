@@ -1,3 +1,3 @@
 ﻿namespace Cranky;
 
-internal record AggregationResults(int Total, int Undocumented);
+public record AggregationResults(int Total, int Undocumented);
