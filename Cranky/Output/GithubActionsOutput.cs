@@ -75,7 +75,7 @@ public class GithubActionsOutput : IOutput
         Console.WriteLine($"::set-output name=total::{result.Total}");
         Console.WriteLine($"::set-output name=undocumented::{result.Undocumented}");
         Console.WriteLine($"::set-output name=documented::{result.Documented}");
-        Console.WriteLine($"::set-output name=percent::{result.DocumentedPercentage}");
+        Console.WriteLine($"::set-output name=percent::{result.DocumentedPercentageDisplay}");
     }
 
     public void Dispose()
