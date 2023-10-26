@@ -72,14 +72,14 @@ public class GithubActionsOutput : IOutput
 
     public void SetResult(AggregationResults result)
     {
-        var envFile = Environment.GetEnvironmentVariable("GITHUB_ENV");
+        var envFile = Environment.GetEnvironmentVariable("GITHUB_OUTPUT");
         if (envFile is not null)
         {
             using var writer = new StreamWriter(envFile, append: true, Encoding.UTF8);
-            writer.WriteLine($"CRANKY_TOTAL={result.Total}");
-            writer.WriteLine($"CRANKY_UNDOCUMENTED={result.Undocumented}");
-            writer.WriteLine($"CRANKY_DOCUMENTED={result.Documented}");
-            writer.WriteLine($"CRANKY_PERCENT={result.DocumentedPercentageDisplay}");
+            writer.WriteLine($"total={result.Total}");
+            writer.WriteLine($"undocumented={result.Undocumented}");
+            writer.WriteLine($"documented={result.Documented}");
+            writer.WriteLine($"percent={result.DocumentedPercentageDisplay}");
             writer.Flush();
         }
         else
