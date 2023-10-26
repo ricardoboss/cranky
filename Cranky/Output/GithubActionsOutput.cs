@@ -72,10 +72,24 @@ public class GithubActionsOutput : IOutput
 
     public void SetResult(AggregationResults result)
     {
-        Console.WriteLine($"::set-output name=total::{result.Total}");
-        Console.WriteLine($"::set-output name=undocumented::{result.Undocumented}");
-        Console.WriteLine($"::set-output name=documented::{result.Documented}");
-        Console.WriteLine($"::set-output name=percent::{result.DocumentedPercentageDisplay}");
+        var envFile = Environment.GetEnvironmentVariable("GITHUB_ENV");
+        if (envFile is not null)
+        {
+            using var writer = new StreamWriter(envFile, append: true, Encoding.UTF8);
+            writer.WriteLine($"CRANKY_TOTAL={result.Total}");
+            writer.WriteLine($"CRANKY_UNDOCUMENTED={result.Undocumented}");
+            writer.WriteLine($"CRANKY_DOCUMENTED={result.Documented}");
+            writer.WriteLine($"CRANKY_PERCENT={result.DocumentedPercentageDisplay}");
+            writer.Flush();
+        }
+        else
+        {
+            // fall back to setting output via stdout
+            Console.WriteLine($"::set-output name=total::{result.Total}");
+            Console.WriteLine($"::set-output name=undocumented::{result.Undocumented}");
+            Console.WriteLine($"::set-output name=documented::{result.Documented}");
+            Console.WriteLine($"::set-output name=percent::{result.DocumentedPercentageDisplay}");
+        }
     }
 
     public void Dispose()
