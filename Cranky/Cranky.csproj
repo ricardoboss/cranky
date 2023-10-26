@@ -21,8 +21,8 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.2.2</Version>
-        <PackageReleaseNotes>Added percentage for display</PackageReleaseNotes>
+        <Version>1.2.3</Version>
+        <PackageReleaseNotes>Use GITHUB_ENV environment variable instead of stdout</PackageReleaseNotes>
 
         <DebugSymbols>true</DebugSymbols>
         <DebugType>embedded</DebugType>
