@@ -21,8 +21,8 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.2.3</Version>
-        <PackageReleaseNotes>Use GITHUB_ENV environment variable instead of stdout</PackageReleaseNotes>
+        <Version>1.2.4</Version>
+        <PackageReleaseNotes>Use GITHUB_OUTPUT for fine-grained output control and also use the same names as before</PackageReleaseNotes>
 
         <DebugSymbols>true</DebugSymbols>
         <DebugType>embedded</DebugType>
