@@ -17,7 +17,7 @@ internal class Analyzer
         this.output = output;
     }
 
-    public async Task<AggregationResults> AnalyzeAsync(CancellationToken cancellationToken = default)
+    public async Task<AnalyzerResult> AnalyzeAsync(CancellationToken cancellationToken = default)
     {
         var total = 0;
         var undocumented = 0;
@@ -57,7 +57,7 @@ internal class Analyzer
         }
     }
 
-    private async Task<AnalysisResult> AnalyzeFileAsync(FileSystemInfo file, CancellationToken cancellationToken = default)
+    private async Task<MemberAnalysisResult> AnalyzeFileAsync(FileSystemInfo file, CancellationToken cancellationToken = default)
     {
         output.WriteDebug("Analyzing file: " + file.FullName);
 

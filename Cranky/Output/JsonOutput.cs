@@ -20,7 +20,7 @@ public class JsonOutput : IOutput
     private class OutputAggregate
     {
         public List<JsonMessage> Messages { get; } = new();
-        public AggregationResults? Result { get; set; }
+        public AnalyzeCommandResult? Result { get; set; }
     }
 
     private readonly OutputAggregate aggregate = new();
@@ -91,7 +91,7 @@ public class JsonOutput : IOutput
         });
     }
 
-    public void SetResult(AggregationResults result)
+    public void SetResult(AnalyzeCommandResult result)
     {
         aggregate.Result = result;
     }

@@ -12,5 +12,5 @@ public interface IOutput : IDisposable
 
     public void WriteDebug(string message);
 
-    public void SetResult(AggregationResults result);
+    public void SetResult(AnalyzeCommandResult result);
 }

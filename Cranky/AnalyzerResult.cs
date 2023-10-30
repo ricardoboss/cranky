@@ -1,6 +1,6 @@
 ﻿namespace Cranky;
 
-public record AggregationResults(int Total, int Undocumented)
+public record AnalyzerResult(int Total, int Undocumented)
 {
     public int Documented => Total - Undocumented;
 

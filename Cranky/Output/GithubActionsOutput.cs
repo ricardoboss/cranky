@@ -70,25 +70,27 @@ public class GithubActionsOutput : IOutput
         Write("debug", message);
     }
 
-    public void SetResult(AggregationResults result)
+    public void SetResult(AnalyzeCommandResult result)
     {
         var envFile = Environment.GetEnvironmentVariable("GITHUB_OUTPUT");
         if (envFile is not null)
         {
             using var writer = new StreamWriter(envFile, append: true, Encoding.UTF8);
-            writer.WriteLine($"total={result.Total}");
-            writer.WriteLine($"undocumented={result.Undocumented}");
-            writer.WriteLine($"documented={result.Documented}");
-            writer.WriteLine($"percent={result.DocumentedPercentageDisplay}");
+            writer.WriteLine($"total={result.AnalyzerResult.Total}");
+            writer.WriteLine($"undocumented={result.AnalyzerResult.Undocumented}");
+            writer.WriteLine($"documented={result.AnalyzerResult.Documented}");
+            writer.WriteLine($"percent={result.AnalyzerResult.DocumentedPercentageDisplay}");
+            writer.WriteLine($"health={result.Health}");
             writer.Flush();
         }
         else
         {
             // fall back to setting output via stdout
-            Console.WriteLine($"::set-output name=total::{result.Total}");
-            Console.WriteLine($"::set-output name=undocumented::{result.Undocumented}");
-            Console.WriteLine($"::set-output name=documented::{result.Documented}");
-            Console.WriteLine($"::set-output name=percent::{result.DocumentedPercentageDisplay}");
+            Console.WriteLine($"::set-output name=total::{result.AnalyzerResult.Total}");
+            Console.WriteLine($"::set-output name=undocumented::{result.AnalyzerResult.Undocumented}");
+            Console.WriteLine($"::set-output name=documented::{result.AnalyzerResult.Documented}");
+            Console.WriteLine($"::set-output name=percent::{result.AnalyzerResult.DocumentedPercentageDisplay}");
+            Console.WriteLine($"::set-output name=health::{result.Health}");
         }
     }
 

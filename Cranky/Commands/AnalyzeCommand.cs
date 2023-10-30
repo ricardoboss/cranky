@@ -102,28 +102,31 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         var result = await analyzer.AnalyzeAsync();
         sw.Stop();
 
-        output.SetResult(result);
-
         output.WriteInfo($"Analyzed {result.Total} members in {sw.ElapsedMilliseconds}ms.");
 
         output.WriteInfo($"Documentation coverage: {result.DocumentedPercentage:P0} ({result.Documented}/{result.Total})");
 
+        var exitCode = 0;
+        string health;
+
         if (result.DocumentedPercentage < minPct)
         {
-            output.WriteError("Documentation coverage is below minimum threshold ❌");
+            health = "Documentation coverage is below minimum threshold ❌";
 
-            return settings.SetExitCode ? 1 : 0;
-        }
-
-        if (result.DocumentedPercentage < okPct)
+            exitCode = settings.SetExitCode ? 1 : 0;
+        } else if (result.DocumentedPercentage < okPct)
         {
-            output.WriteWarning("Documentation coverage is below acceptable threshold ⚠️");
-
-            return 0;
+            health = "Documentation coverage is below acceptable threshold ⚠️";
+        }
+        else
+        {
+            health = "Documentation coverage passed ✅";
         }
 
-        output.WriteInfo("Documentation coverage passed ✅");
+        output.WriteInfo(health);
 
-        return 0;
+        output.SetResult(new(result, health));
+
+        return exitCode;
     }
 }
