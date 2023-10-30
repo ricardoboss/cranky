@@ -69,7 +69,7 @@ internal class Analyzer
         // 2. get public api
         var publicMembers = root.DescendantNodes()
             .OfType<MemberDeclarationSyntax>()
-            .Where(m => m.Modifiers.Any(SyntaxKind.PublicKeyword))
+            .Where(m => m.Modifiers.Any(SyntaxKind.PublicKeyword) || m.Modifiers.Any(SyntaxKind.ProtectedKeyword))
             .ToList();
 
         // 3. get api documentation
