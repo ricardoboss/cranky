@@ -81,6 +81,8 @@ public class GithubActionsOutput : IOutput
             writer.WriteLine($"documented={result.AnalyzerResult.Documented}");
             writer.WriteLine($"percent={result.AnalyzerResult.DocumentedPercentageDisplay}");
             writer.WriteLine($"health={result.Health}");
+            writer.WriteLine($"badge={result.Badge}");
+            writer.WriteLine($"message={result.Message}");
             writer.Flush();
         }
         else
@@ -91,6 +93,8 @@ public class GithubActionsOutput : IOutput
             Console.WriteLine($"::set-output name=documented::{result.AnalyzerResult.Documented}");
             Console.WriteLine($"::set-output name=percent::{result.AnalyzerResult.DocumentedPercentageDisplay}");
             Console.WriteLine($"::set-output name=health::{result.Health}");
+            Console.WriteLine($"::set-output name=badge::{result.Badge}");
+            Console.WriteLine($"::set-output name=message::{result.Message}");
         }
     }
 

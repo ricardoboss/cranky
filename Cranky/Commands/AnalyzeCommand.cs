@@ -107,25 +107,29 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         output.WriteInfo($"Documentation coverage: {result.DocumentedPercentage:P0} ({result.Documented}/{result.Total})");
 
         var exitCode = 0;
-        string health;
+        HealthIndicator health;
+        string message;
 
         if (result.DocumentedPercentage < minPct)
         {
-            health = "Documentation coverage is below minimum threshold ❌";
+            health = HealthIndicator.Error;
+            message = "Documentation coverage is below minimum threshold ❌";
 
             exitCode = settings.SetExitCode ? 1 : 0;
         } else if (result.DocumentedPercentage < okPct)
         {
-            health = "Documentation coverage is below acceptable threshold ⚠️";
+            health = HealthIndicator.Warning;
+            message = "Documentation coverage is below acceptable threshold ⚠️";
         }
         else
         {
-            health = "Documentation coverage passed ✅";
+            health = HealthIndicator.Success;
+            message = "Documentation coverage passed ✅";
         }
 
-        output.WriteInfo(health);
+        output.WriteInfo(message);
 
-        output.SetResult(new(result, health));
+        output.SetResult(new(result, health, message));
 
         return exitCode;
     }
