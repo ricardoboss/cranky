@@ -11,7 +11,7 @@ public record AnalyzeCommandResult(AnalyzerResult AnalyzerResult, HealthIndicato
             {
                 HealthIndicator.Error => $"https://img.shields.io/badge/Documentation%20Coverage-{pct}%25-red",
                 HealthIndicator.Warning => $"https://img.shields.io/badge/Documentation%20Coverage-{pct}%25-yellow",
-                HealthIndicator.Success => $"https://img.shields.io/badge/Documentation%20Coverage-{pct}%25-green",
+                HealthIndicator.Success => $"https://img.shields.io/badge/Documentation%20Coverage-{pct}%25-brightgreen",
                 _ => throw new ArgumentOutOfRangeException(),
             };
         }
@@ -24,4 +24,18 @@ public record AnalyzeCommandResult(AnalyzerResult AnalyzerResult, HealthIndicato
         HealthIndicator.Success => "✅",
         _ => throw new ArgumentOutOfRangeException(),
     };
+
+    public Dictionary<string, dynamic> ToJson()
+    {
+        return new()
+        {
+            { "total", AnalyzerResult.Total },
+            { "documented", AnalyzerResult.Documented },
+            { "undocumented", AnalyzerResult.Undocumented },
+            { "percent", AnalyzerResult.DocumentedPercentageDisplay },
+            { "health", HealthEmoji },
+            { "message", Message },
+            { "badge", Badge },
+        };
+    }
 }
