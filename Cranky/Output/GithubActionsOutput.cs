@@ -80,7 +80,7 @@ public class GithubActionsOutput : IOutput
             writer.WriteLine($"undocumented={result.AnalyzerResult.Undocumented}");
             writer.WriteLine($"documented={result.AnalyzerResult.Documented}");
             writer.WriteLine($"percent={result.AnalyzerResult.DocumentedPercentageDisplay}");
-            writer.WriteLine($"health={result.Health}");
+            writer.WriteLine($"health={result.HealthEmoji}");
             writer.WriteLine($"badge={result.Badge}");
             writer.WriteLine($"message={result.Message}");
             writer.Flush();
@@ -92,7 +92,7 @@ public class GithubActionsOutput : IOutput
             Console.WriteLine($"::set-output name=undocumented::{result.AnalyzerResult.Undocumented}");
             Console.WriteLine($"::set-output name=documented::{result.AnalyzerResult.Documented}");
             Console.WriteLine($"::set-output name=percent::{result.AnalyzerResult.DocumentedPercentageDisplay}");
-            Console.WriteLine($"::set-output name=health::{result.Health}");
+            Console.WriteLine($"::set-output name=health::{result.HealthEmoji}");
             Console.WriteLine($"::set-output name=badge::{result.Badge}");
             Console.WriteLine($"::set-output name=message::{result.Message}");
         }

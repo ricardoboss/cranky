@@ -16,4 +16,12 @@ public record AnalyzeCommandResult(AnalyzerResult AnalyzerResult, HealthIndicato
             };
         }
     }
+
+    public string HealthEmoji => Health switch
+    {
+        HealthIndicator.Error => "❌",
+        HealthIndicator.Warning => "⚠️",
+        HealthIndicator.Success => "✅",
+        _ => throw new ArgumentOutOfRangeException(),
+    };
 }
