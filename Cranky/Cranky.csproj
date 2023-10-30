@@ -21,8 +21,8 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.2.4</Version>
-        <PackageReleaseNotes>Use GITHUB_OUTPUT for fine-grained output control and also use the same names as before</PackageReleaseNotes>
+        <Version>1.3.0</Version>
+        <PackageReleaseNotes>Added badge url and health emojis to outputs for GitHub</PackageReleaseNotes>
 
         <DebugSymbols>true</DebugSymbols>
         <DebugType>embedded</DebugType>
