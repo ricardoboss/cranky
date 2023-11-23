@@ -8,12 +8,12 @@ namespace Cranky;
 
 internal class Analyzer
 {
-    private readonly IEnumerable<FileSystemInfo> projects;
+    private readonly IEnumerable<FileSystemInfo> projectFiles;
     private readonly IOutput output;
 
-    public Analyzer(IEnumerable<FileSystemInfo> projects, IOutput output)
+    public Analyzer(IEnumerable<FileSystemInfo> projectFiles, IOutput output)
     {
-        this.projects = projects;
+        this.projectFiles = projectFiles;
         this.output = output;
     }
 
@@ -22,7 +22,7 @@ internal class Analyzer
         var total = 0;
         var undocumented = 0;
 
-        foreach (var projectFile in projects)
+        foreach (var projectFile in projectFiles)
         {
             output.WriteDebug("Analyzing project: " + projectFile.FullName);
 
