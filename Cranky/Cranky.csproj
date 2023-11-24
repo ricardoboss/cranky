@@ -13,20 +13,26 @@
         <ToolCommandName>cranky</ToolCommandName>
 
         <Title>Cranky</Title>
-        <Authors>Ricardo Boss</Authors>
         <Description>A tool to analyze the percentage of undocumented public APIs in your .NET project.</Description>
-        <Copyright>2023 Ricardo Boss</Copyright>
-        <PackageProjectUrl>https://github.com/ricardoboss/cranky</PackageProjectUrl>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <RepositoryUrl>https://github.com/ricardoboss/cranky</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
         <Version>1.4.0</Version>
         <PackageReleaseNotes>Added support for loading solutions, detecting solution/project in current dir and --debug flag.</PackageReleaseNotes>
 
+        <Authors>Ricardo Boss</Authors>
+        <Copyright>2023 Ricardo Boss</Copyright>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+        <PackageProjectUrl>https://github.com/ricardoboss/cranky</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/ricardoboss/cranky</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <!-- needed for Source Link -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
         <DebugSymbols>true</DebugSymbols>
         <DebugType>embedded</DebugType>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
@@ -35,10 +41,8 @@
       <PackageReference Include="Buildalyzer" Version="5.0.1" />
       <PackageReference Include="ByteDev.DotNet" Version="7.2.1" />
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" />
-      <PackageReference Include="NuGet.Frameworks" Version="6.8.0">
-          <PrivateAssets>all</PrivateAssets>
-      </PackageReference>
       <PackageReference Include="Spectre.Console.Cli" Version="0.48.0" />
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
     </ItemGroup>
 
 </Project>
