@@ -3,7 +3,6 @@ using Cranky.Output;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using NuGet.Frameworks;
 
 namespace Cranky;
 
@@ -39,9 +38,6 @@ internal class Analyzer(IEnumerable<FileSystemInfo> files, IOutput output, bool 
     {;
         var manager = new AnalyzerManager();
         var analyzer = manager.GetProject(projectFilePath);
-
-        // MIND: this somehow fixes an issue where Buildalyzer doesn't load Nuget.Framework properly
-        _ = NuGetFrameworkNameComparer.Instance.Equals(NuGetFramework.AnyFramework, NuGetFramework.AnyFramework);
 
         if (buildLogging)
             analyzer.AddBuildLogger(new BuildLogger(output));
