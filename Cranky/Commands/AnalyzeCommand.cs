@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using ByteDev.DotNet.Solution;
 using Cranky.Output;
 using Spectre.Console.Cli;
 
@@ -11,10 +12,10 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
     internal sealed class Settings : CommandSettings
     {
         [CommandOption("-p|--project")]
-        public FileInfo? ProjectFile { get; init; }
+        public FileSystemInfo? ProjectFile { get; init; }
 
         [CommandOption("-s|--solution")]
-        public FileInfo? SolutionFile { get; init; }
+        public FileSystemInfo? SolutionFile { get; init; }
 
         [CommandOption("--github")]
         public bool Github { get; init; }
@@ -27,12 +28,16 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         [CommandOption("-e|--set-exit-code")]
         public bool SetExitCode { get; init; }
+
+        [CommandOption("--debug")]
+        public bool Debug { get; init; }
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
         var projectFile = settings.ProjectFile;
         var solutionFile = settings.SolutionFile;
+        var debug = settings.Debug;
 
         using IOutput output = settings switch
         {
@@ -43,11 +48,14 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         if (projectFile is null && solutionFile is null)
         {
-            // TODO: use current directory to find project or solution file
+            (solutionFile, projectFile) = TryFindSolutionOrProjectInCurrentDir();
 
-            output.WriteError("Either a project or solution file must be specified.");
+            if (solutionFile is null && projectFile is null)
+            {
+                output.WriteError("Either a project or solution file must be specified.");
 
-            return 1;
+                return 1;
+            }
         }
 
         if (projectFile is not null && solutionFile is not null)
@@ -82,19 +90,15 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         output.WriteDebug($"Minimum documentation coverage: {minPct:P0}");
         output.WriteDebug($"Acceptable documentation coverage: {okPct:P0}");
 
-        // TODO implement for solutions
-        var projects = solutionFile is not null
-            ? Array.Empty<FileSystemInfo>()
-            : new[] { projectFile! };
-
-        if (!projects.Any())
+        var projectFiles = LoadProjects(solutionFile, projectFile).ToList();
+        if (!projectFiles.Any())
         {
             output.WriteError("No solution or project file found.");
 
             return 1;
         }
 
-        var analyzer = new Analyzer(projects, output);
+        var analyzer = new Analyzer(projectFiles, output, debug);
 
         output.WriteInfo("Analyzing projects...");
 
@@ -132,5 +136,41 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         output.SetResult(new(result, health, message));
 
         return exitCode;
+    }
+
+    private static (FileSystemInfo? solutionFile, FileSystemInfo? projectFile) TryFindSolutionOrProjectInCurrentDir()
+    {
+        var currentDir = new DirectoryInfo(Environment.CurrentDirectory);
+
+        var solutionFile = currentDir.EnumerateFiles("*.sln").FirstOrDefault();
+        if (solutionFile is not null)
+            return (solutionFile, null);
+
+        var projectFile = currentDir.EnumerateFiles("*.csproj").FirstOrDefault();
+        if (projectFile is not null)
+            return (null, projectFile);
+
+        return (null, null);
+    }
+
+    private static IEnumerable<FileSystemInfo> LoadProjects(FileSystemInfo? solutionFile, FileSystemInfo? projectFile)
+    {
+        if (solutionFile is not null)
+            return LoadProjectsFromSolution(solutionFile);
+
+        Debug.Assert(projectFile is not null);
+
+        return new[] { projectFile };
+    }
+
+    private static IEnumerable<FileSystemInfo> LoadProjectsFromSolution(FileSystemInfo solutionFile)
+    {
+        var csharpProjectType = new Guid("fae04ec0-301f-11d3-bf4b-00c04f79efbc");
+
+        var solution = DotNetSolution.Load(solutionFile.FullName);
+
+        return solution.Projects
+            .Where(p => p.Type.Id == csharpProjectType)
+            .Select(p => new FileInfo(p.Path));
     }
 }

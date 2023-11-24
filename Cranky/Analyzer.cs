@@ -3,30 +3,24 @@ using Cranky.Output;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NuGet.Frameworks;
 
 namespace Cranky;
 
-internal class Analyzer
+internal class Analyzer(IEnumerable<FileSystemInfo> files, IOutput output, bool buildLogging)
 {
-    private readonly IEnumerable<FileSystemInfo> projectFiles;
-    private readonly IOutput output;
-
-    public Analyzer(IEnumerable<FileSystemInfo> projectFiles, IOutput output)
-    {
-        this.projectFiles = projectFiles;
-        this.output = output;
-    }
-
     public async Task<AnalyzerResult> AnalyzeAsync(CancellationToken cancellationToken = default)
     {
         var total = 0;
         var undocumented = 0;
 
-        foreach (var projectFile in projectFiles)
+        foreach (var projectFile in files)
         {
-            output.WriteDebug("Analyzing project: " + projectFile.FullName);
+            var projectFilePath = projectFile.FullName.Replace("\\", "/").Replace("/", Path.DirectorySeparatorChar.ToString());
 
-            foreach (var file in GetSourceFiles(projectFile, cancellationToken))
+            output.WriteDebug("Analyzing project: " + projectFilePath);
+
+            foreach (var file in GetSourceFiles(projectFilePath, cancellationToken))
             {
                 if (!file.Exists)
                     continue;
@@ -41,10 +35,17 @@ internal class Analyzer
         return new(total, undocumented);
     }
 
-    private static IEnumerable<FileSystemInfo> GetSourceFiles(FileSystemInfo projectFile, CancellationToken cancellationToken = default)
-    {
+    private IEnumerable<FileSystemInfo> GetSourceFiles(string projectFilePath, CancellationToken cancellationToken = default)
+    {;
         var manager = new AnalyzerManager();
-        var analyzer = manager.GetProject(projectFile.FullName);
+        var analyzer = manager.GetProject(projectFilePath);
+
+        // MIND: this somehow fixes an issue where Buildalyzer doesn't load Nuget.Framework properly
+        _ = NuGetFrameworkNameComparer.Instance.Equals(NuGetFramework.AnyFramework, NuGetFramework.AnyFramework);
+
+        if (buildLogging)
+            analyzer.AddBuildLogger(new BuildLogger(output));
+
         var results = analyzer.Build();
         foreach (var result in results)
         {

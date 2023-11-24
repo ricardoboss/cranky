@@ -2,9 +2,10 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>latestmajor</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -33,8 +34,11 @@
     <ItemGroup>
       <PackageReference Include="Buildalyzer" Version="5.0.1" />
       <PackageReference Include="ByteDev.DotNet" Version="7.2.1" />
-      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.7.0" />
-      <PackageReference Include="Spectre.Console.Cli" Version="0.47.0" />
+      <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" />
+      <PackageReference Include="NuGet.Frameworks" Version="6.8.0">
+          <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
+      <PackageReference Include="Spectre.Console.Cli" Version="0.48.0" />
     </ItemGroup>
 
 </Project>
