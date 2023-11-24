@@ -18,6 +18,8 @@ Cranky supports the following command-line arguments:
 
 - **-e|--set-exit-code**: Set an exit code other than 0 if coverage is below the minimum. By default, the exit code is not set.
 
+- **--debug**: Enable build output for debugging.
+
 The default output just writes information to stdout (including ANSI color codes).
 
 ## JSON Output
@@ -69,8 +71,8 @@ To analyze a project, use the `-p` option and provide the path to the .csproj fi
 Example usage:
 
 ```shell
-# Analyze a project
-cranky -p MyProject.csproj
+# Analyze a project/solution in the current directory
+cranky
 
 # Analyze a solution with custom percentage thresholds
 cranky -s MySolution.sln --percentages 40,85
