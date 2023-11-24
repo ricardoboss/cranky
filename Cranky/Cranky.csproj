@@ -16,8 +16,8 @@
         <Description>A tool to analyze the percentage of undocumented public APIs in your .NET project.</Description>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.4.0</Version>
-        <PackageReleaseNotes>Added support for loading solutions, detecting solution/project in current dir and --debug flag.</PackageReleaseNotes>
+        <Version>1.4.1</Version>
+        <PackageReleaseNotes>Try to fix NuGet.Frameworks problem at run time.</PackageReleaseNotes>
 
         <Authors>Ricardo Boss</Authors>
         <Copyright>2023 Ricardo Boss</Copyright>
