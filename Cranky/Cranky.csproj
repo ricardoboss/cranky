@@ -43,6 +43,7 @@
       <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0" />
       <PackageReference Include="Spectre.Console.Cli" Version="0.48.0" />
       <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+      <PackageReference Include="NuGet.Frameworks" Version="6.8.0" IncludeAssets="All" />
     </ItemGroup>
 
 </Project>

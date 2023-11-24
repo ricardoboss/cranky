@@ -3,6 +3,7 @@ using Cranky.Output;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using NuGet.Frameworks;
 
 namespace Cranky;
 
@@ -36,6 +37,9 @@ internal class Analyzer(IEnumerable<FileSystemInfo> files, IOutput output, bool 
 
     private IEnumerable<FileSystemInfo> GetSourceFiles(string projectFilePath, CancellationToken cancellationToken = default)
     {;
+        // cause load of NuGet.Framework DLL
+        _ = NuGetFramework.AnyFramework;
+
         var manager = new AnalyzerManager();
         var analyzer = manager.GetProject(projectFilePath);
 
