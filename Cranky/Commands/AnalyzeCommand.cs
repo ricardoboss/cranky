@@ -12,10 +12,10 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
     internal sealed class Settings : CommandSettings
     {
         [CommandOption("-p|--project")]
-        public FileSystemInfo? ProjectFile { get; init; }
+        public FileInfo? ProjectFile { get; init; }
 
         [CommandOption("-s|--solution")]
-        public FileSystemInfo? SolutionFile { get; init; }
+        public FileInfo? SolutionFile { get; init; }
 
         [CommandOption("--github")]
         public bool Github { get; init; }
@@ -138,7 +138,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         return exitCode;
     }
 
-    private static (FileSystemInfo? solutionFile, FileSystemInfo? projectFile) TryFindSolutionOrProjectInCurrentDir()
+    private static (FileInfo? solutionFile, FileInfo? projectFile) TryFindSolutionOrProjectInCurrentDir()
     {
         var currentDir = new DirectoryInfo(Environment.CurrentDirectory);
 
