@@ -8,7 +8,7 @@ Cranky supports the following command-line arguments:
 
 - **-p|--project \<csproj>**: Specify a .csproj file to analyze.
 
-- **-s|--solution \<sln>**: Specify a .sln file to analyze the entire solution.
+- **-s|--solution \<sln>**: Specify a .sln file to analyze the entire solution. (only csproj projects are analyzed)
 
 - **--github**: Enable output compatible with GitHub actions.
 
