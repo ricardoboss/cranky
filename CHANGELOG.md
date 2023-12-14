@@ -1,3 +1,8 @@
+1.4.4
+-----
+
+* Include README.md in nupkg
+
 1.4.3
 -----
 
