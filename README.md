@@ -6,9 +6,11 @@ Cranky is a command-line tool for analyzing the documentation coverage of public
 
 Cranky supports the following command-line arguments:
 
-- **-p|--project \<csproj>**: Specify a .csproj file to analyze.
+- **-p|--project \<csproj>**: Specify a .csproj file to analyze. Repeatable.
 
 - **-s|--solution \<sln>**: Specify a .sln file to analyze the entire solution. (only csproj projects are analyzed)
+
+- **-x|--exclude \<pattern>**: Specify a pattern to exclude projects from analysis. Supports glob patterns. Repeatable.
 
 - **--github**: Enable output compatible with GitHub actions.
 
@@ -79,6 +81,9 @@ cranky -s MySolution.sln --percentages 40,85
 
 # Analyze a project, output for GitHub Actions and set exit code
 cranky -p MyProject.csproj --github --set-exit-code
+
+# Exclude test projects
+cranky -s MySolution.sln --exclude *.Tests*
 ```
 
 ## GitHub Actions Workflow
