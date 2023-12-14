@@ -16,8 +16,7 @@
         <Description>A tool to analyze the percentage of undocumented public APIs in your .NET project.</Description>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.4.2</Version>
-        <PackageReleaseNotes>Fix problem with options parsing.</PackageReleaseNotes>
+        <Version>1.4.3</Version>
 
         <Authors>Ricardo Boss</Authors>
         <Copyright>2023 Ricardo Boss</Copyright>
@@ -36,6 +35,27 @@
 
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
+
+    <Target Name="PreparePackageReleaseNotesFromFile" BeforeTargets="GenerateNuspec">
+        <ReadLinesFromFile File="../CHANGELOG.md">
+            <Output TaskParameter="Lines" ItemName="ReleaseNoteLines" />
+        </ReadLinesFromFile>
+        <PropertyGroup>
+            <PackageReleaseNotes>@(ReleaseNoteLines, '%0a')</PackageReleaseNotes>
+        </PropertyGroup>
+    </Target>
+
+    <ItemGroup>
+        <None Include="../README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+
+        <None Include="../LICENSE">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Buildalyzer" Version="5.0.1" />
