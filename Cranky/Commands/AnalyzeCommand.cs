@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using ByteDev.DotNet.Solution;
 using Cranky.Output;
 using Spectre.Console.Cli;
@@ -16,6 +17,9 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         [CommandOption("-s|--solution")]
         public FileInfo? SolutionFile { get; init; }
+
+        [CommandOption("-x|--exclude")]
+        public string[]? ExcludedProjectsPatterns { get; init; }
 
         [CommandOption("--github")]
         public bool Github { get; init; }
@@ -37,6 +41,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
     {
         var projectFile = settings.ProjectFile;
         var solutionFile = settings.SolutionFile;
+        var excludedProjectPatterns = settings.ExcludedProjectsPatterns;
         var debug = settings.Debug;
 
         using IOutput output = settings switch
@@ -90,7 +95,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         output.WriteDebug($"Minimum documentation coverage: {minPct:P0}");
         output.WriteDebug($"Acceptable documentation coverage: {okPct:P0}");
 
-        var projectFiles = LoadProjects(output, solutionFile, projectFile).ToList();
+        var projectFiles = LoadProjects(output, solutionFile, projectFile, excludedProjectPatterns).ToList();
         if (!projectFiles.Any())
         {
             output.WriteError("No solution or project file found.");
@@ -153,16 +158,41 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         return (null, null);
     }
 
-    private static IEnumerable<FileSystemInfo> LoadProjects(IOutput output, FileSystemInfo? solutionFile, FileSystemInfo? projectFile)
+    private static IEnumerable<FileSystemInfo> LoadProjects(IOutput output, FileSystemInfo? solutionFile, FileSystemInfo? projectFile, string[]? excludedProjectsPatterns)
     {
+        IEnumerable<FileSystemInfo> projects;
         if (solutionFile is not null)
-            return LoadProjectsFromSolution(output, solutionFile);
+            projects = LoadProjectsFromSolution(output, solutionFile);
+        else
+        {
+            Debug.Assert(projectFile is not null);
 
-        Debug.Assert(projectFile is not null);
+            output.WriteInfo($"Loading project: {projectFile.FullName}");
 
-        output.WriteInfo($"Loading project: {projectFile.FullName}");
+            projects = new[] { projectFile };
+        }
 
-        return new[] { projectFile };
+        if (excludedProjectsPatterns is null)
+        {
+            foreach (var project in projects)
+                yield return project;
+
+            yield break;
+        }
+
+        var regexes = excludedProjectsPatterns.Select(p => new Regex("^" + Regex.Escape(p).Replace("\\*", ".*").Replace("\\?", ".") + "$")).ToArray();
+
+        output.WriteDebug($"Applying {excludedProjectsPatterns.Length} project exclude patterns:");
+        foreach (var excludePattern in regexes)
+            output.WriteDebug($"  {excludePattern}");
+
+        foreach (var project in projects)
+        {
+            if (regexes.Any(r => r.IsMatch(project.FullName)))
+                output.WriteDebug($"Excluding project: {project.FullName}");
+            else
+                yield return project;
+        }
     }
 
     private static IEnumerable<FileSystemInfo> LoadProjectsFromSolution(IOutput output, FileSystemInfo solutionFile)
@@ -184,7 +214,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         output.WriteDebug($"Found {projects.Count} projects in solution:");
         foreach (var project in projects)
-            output.WriteDebug($"  {project.Path} ({project.Type.Description}, {project.Type.Id})");
+            output.WriteDebug($"  {project.Path}");
 
         return projects.Select(p => new FileInfo(p.Path));
     }
