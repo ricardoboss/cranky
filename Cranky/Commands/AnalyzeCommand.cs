@@ -90,7 +90,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         output.WriteDebug($"Minimum documentation coverage: {minPct:P0}");
         output.WriteDebug($"Acceptable documentation coverage: {okPct:P0}");
 
-        var projectFiles = LoadProjects(solutionFile, projectFile).ToList();
+        var projectFiles = LoadProjects(output, solutionFile, projectFile).ToList();
         if (!projectFiles.Any())
         {
             output.WriteError("No solution or project file found.");
@@ -153,24 +153,39 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         return (null, null);
     }
 
-    private static IEnumerable<FileSystemInfo> LoadProjects(FileSystemInfo? solutionFile, FileSystemInfo? projectFile)
+    private static IEnumerable<FileSystemInfo> LoadProjects(IOutput output, FileSystemInfo? solutionFile, FileSystemInfo? projectFile)
     {
         if (solutionFile is not null)
-            return LoadProjectsFromSolution(solutionFile);
+            return LoadProjectsFromSolution(output, solutionFile);
 
         Debug.Assert(projectFile is not null);
+
+        output.WriteInfo($"Loading project: {projectFile.FullName}");
 
         return new[] { projectFile };
     }
 
-    private static IEnumerable<FileSystemInfo> LoadProjectsFromSolution(FileSystemInfo solutionFile)
+    private static IEnumerable<FileSystemInfo> LoadProjectsFromSolution(IOutput output, FileSystemInfo solutionFile)
     {
-        var csharpProjectType = new Guid("fae04ec0-301f-11d3-bf4b-00c04f79efbc");
+        Guid[] csProjectTypes = [
+            new("fae04ec0-301f-11d3-bf4b-00c04f79efbc"), // C# (.NET Framework)
+            new("9a19103f-16f7-4668-be54-9a1e7a4f7556"), // C# (.NET Core)
+            new("2eff6e4d-ff75-4adf-a9be-74bec0b0aff8"), // Class library
+        ];
+
+        output.WriteInfo($"Loading solution: {solutionFile.FullName}");
 
         var solution = DotNetSolution.Load(solutionFile.FullName);
 
-        return solution.Projects
-            .Where(p => p.Type.Id == csharpProjectType)
-            .Select(p => new FileInfo(p.Path));
+        var projects = solution.Projects
+            .Where(p => !p.Type.IsSolutionFolder)
+            .Where(p => csProjectTypes.Contains(p.Type.Id))
+            .ToList();
+
+        output.WriteDebug($"Found {projects.Count} projects in solution:");
+        foreach (var project in projects)
+            output.WriteDebug($"  {project.Path} ({project.Type.Description}, {project.Type.Id})");
+
+        return projects.Select(p => new FileInfo(p.Path));
     }
 }
