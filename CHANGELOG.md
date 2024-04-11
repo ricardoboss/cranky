@@ -3,6 +3,7 @@
 
 * Added Azure Pipelines output format (`--azure`)
 * Added output groups for GitHub and Azure Pipelines
+* Added descriptions for command line args
 
 1.4.4
 -----

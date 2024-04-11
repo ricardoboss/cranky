@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using ByteDev.DotNet.Solution;
@@ -12,30 +13,39 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 {
     internal sealed class Settings : CommandSettings
     {
+        [Description("Path to the project file.")]
         [CommandOption("-p|--project")]
         public FileInfo? ProjectFile { get; init; }
 
+        [Description("Path to the solution file.")]
         [CommandOption("-s|--solution")]
         public FileInfo? SolutionFile { get; init; }
 
+        [Description("Patterns to exclude projects. (e.g.: '*.Test')")]
         [CommandOption("-x|--exclude")]
         public string[]? ExcludedProjectsPatterns { get; init; }
 
+        [Description("Format output for GitHub Actions.")]
         [CommandOption("--github")]
         public bool Github { get; init; }
 
+        [Description("Format output for Azure Pipelines.")]
         [CommandOption("--azure")]
         public bool Azure { get; init; }
 
+        [Description("Format output as JSON.")]
         [CommandOption("--json")]
         public bool Json { get; init; }
 
+        [Description("Minimum and acceptable documentation coverage percentages. Default: 50,90")]
         [CommandOption("--percentages")]
         public string Percentages { get; init; } = "50,90";
 
+        [Description("Set exit code to 1 if documentation coverage is below minimum threshold.")]
         [CommandOption("-e|--set-exit-code")]
         public bool SetExitCode { get; init; }
 
+        [Description("Enable debug output for MSBuild.")]
         [CommandOption("--debug")]
         public bool Debug { get; init; }
     }
