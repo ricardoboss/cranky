@@ -109,6 +109,16 @@ steps:
 
 This will run Cranky with GitHub actions-compatible output.
 
+## Development
+
+### Publishing
+
+To publish a new version of Cranky, update the version number in `Cranky.csproj` and run the following command:
+
+```shell
+dotnet pack -c Release
+```
+
 ## License
 
 This project is licensed under the [MIT License](https://github.com/ricardoboss/cranky/blob/main/LICENSE).
