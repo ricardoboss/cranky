@@ -11,6 +11,9 @@ internal class Analyzer(IReadOnlyCollection<FileSystemInfo> projectFiles, IOutpu
 {
     public async Task<AnalyzerResult> AnalyzeAsync(CancellationToken cancellationToken = default)
     {
+        var totalProjects = projectFiles.Count;
+        var reportedProjects = 0;
+
         var total = 0;
         var undocumented = 0;
 
@@ -22,7 +25,6 @@ internal class Analyzer(IReadOnlyCollection<FileSystemInfo> projectFiles, IOutpu
 
             var sourceFiles = GetSourceFiles(projectFilePath, cancellationToken).ToList();
             var totalFiles = sourceFiles.Count;
-            var reportedFiles = 0;
 
             foreach (var sourceFile in sourceFiles)
             {
@@ -37,18 +39,18 @@ internal class Analyzer(IReadOnlyCollection<FileSystemInfo> projectFiles, IOutpu
 
                 total += result.PublicMembers.Count;
                 undocumented += result.UndocumentedMembers.Count;
-
-                output.SetProgress(totalFiles, ++reportedFiles);
             }
 
             if (totalFiles == 0)
-            {
                 output.WriteWarning("No source files analyzed.");
-            } else if (reportedFiles != totalFiles)
-                output.SetProgress(totalFiles, totalFiles);
 
             output.CloseGroup();
+
+            output.SetProgress(totalProjects, ++reportedProjects);
         }
+
+        if (totalProjects != reportedProjects)
+            output.SetProgress(totalProjects, totalProjects);
 
         return new(total, undocumented);
     }

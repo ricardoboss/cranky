@@ -1,3 +1,8 @@
+1.5.1
+-----
+
+* Only report overall progress in output, not for each project
+
 1.5.0
 -----
 
