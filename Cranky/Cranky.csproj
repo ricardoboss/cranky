@@ -16,7 +16,7 @@
         <Description>A tool to analyze the percentage of undocumented public APIs in your .NET project.</Description>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.5.0</Version>
+        <Version>1.5.1</Version>
 
         <Authors>Ricardo Boss</Authors>
         <Copyright>2024 Ricardo Boss</Copyright>
