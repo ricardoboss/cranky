@@ -12,7 +12,9 @@ Cranky supports the following command-line arguments:
 
 - **-x|--exclude \<pattern>**: Specify a pattern to exclude projects from analysis. Supports glob patterns. Repeatable.
 
-- **--github**: Enable output compatible with GitHub actions.
+- **--github**: Enable output compatible with GitHub Actions.
+
+- **--azure**: Enable output compatible with Azure Pipelines.
 
 - **--json**: Enable output in JSON format.
 
