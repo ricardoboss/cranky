@@ -38,12 +38,12 @@ public class BuildLogger(IOutput output) : ILogger
 
     private void OnErrorRaised(object sender, BuildErrorEventArgs e)
     {
-        output.WriteErrorEscaped(e.Message);
+        output.WriteErrorEscaped(e.Message, e.File, e.LineNumber, e.ColumnNumber, e.EndLineNumber, e.EndColumnNumber, e.Code);
     }
 
     private void OnMessageRaised(object sender, BuildMessageEventArgs e)
     {
-        output.WriteInfoEscaped(e.Message);
+        output.WriteInfoEscaped(e.Message, e.File, e.LineNumber, e.ColumnNumber, e.EndLineNumber, e.EndColumnNumber, e.Code);
     }
 
     /// <inheritdoc />

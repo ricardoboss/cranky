@@ -6,7 +6,7 @@ public interface IOutput : IDisposable
 
     public void WriteWarning(string message, string? file = null, int? line = null, int? col = null, int? endLine = null, int? endColumn = null, string? code = null);
 
-    public void WriteInfo(string message);
+    public void WriteInfo(string message, string? file = null, int? line = null, int? col = null, int? endLine = null, int? endColumn = null, string? code = null);
 
     public void WriteDebug(string message);
 

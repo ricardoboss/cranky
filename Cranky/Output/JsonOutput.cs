@@ -58,12 +58,19 @@ public class JsonOutput : IOutput
         });
     }
 
-    public void WriteInfo(string message)
+    public void WriteInfo(string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
+        int? endColumn = null, string? code = null)
     {
         aggregate.Messages.Add(new()
         {
             Type = "info",
             Message = message,
+            File = file,
+            Line = line,
+            Col = col,
+            EndLine = endLine,
+            EndColumn = endColumn,
+            Code = code,
         });
     }
 

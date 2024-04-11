@@ -26,7 +26,8 @@ public class AnsiConsoleOutput : IOutput
         AnsiConsole.MarkupLine("[yellow]Warning:[/] {0}", message);
     }
 
-    public void WriteInfo(string message)
+    public void WriteInfo(string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
+        int? endColumn = null, string? code = null)
     {
         WriteIndent();
         AnsiConsole.MarkupLine("[blue]Info:[/] {0}", message);
