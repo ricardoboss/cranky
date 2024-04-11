@@ -24,6 +24,9 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         [CommandOption("--github")]
         public bool Github { get; init; }
 
+        [CommandOption("--azure")]
+        public bool Azure { get; init; }
+
         [CommandOption("--json")]
         public bool Json { get; init; }
 
@@ -47,6 +50,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         using IOutput output = settings switch
         {
             { Github: true } => new GithubActionsOutput(),
+            { Azure: true } => new AzurePipelinesOutput(),
             { Json: true } => new JsonOutput(),
             _ => new AnsiConsoleOutput(),
         };
