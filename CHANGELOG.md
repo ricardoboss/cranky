@@ -1,3 +1,9 @@
+1.5.0
+-----
+
+* Added Azure Pipelines output format (`--azure`)
+* Added output groups for GitHub and Azure Pipelines
+
 1.4.4
 -----
 

@@ -16,10 +16,10 @@
         <Description>A tool to analyze the percentage of undocumented public APIs in your .NET project.</Description>
         <PackageTags>tool, analyzer, documentation, docs, api</PackageTags>
 
-        <Version>1.4.4</Version>
+        <Version>1.5.0</Version>
 
         <Authors>Ricardo Boss</Authors>
-        <Copyright>2023 Ricardo Boss</Copyright>
+        <Copyright>2024 Ricardo Boss</Copyright>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
 
