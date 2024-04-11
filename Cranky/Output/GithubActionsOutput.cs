@@ -43,21 +43,15 @@ public class GithubActionsOutput : IOutput
     }
 
     public void WriteError(string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
+        int? endColumn = null, string? code = null)
     {
-        Write("error", message, file, line, col, endLine, endColumn, title);
+        Write("error", message, file, line, col, endLine, endColumn, code);
     }
 
     public void WriteWarning(string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
+        int? endColumn = null, string? code = null)
     {
-        Write("warning", message, file, line, col, endLine, endColumn, title);
-    }
-
-    public void WriteNotice(string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
-    {
-        Write("notice", message, file, line, col, endLine, endColumn, title);
+        Write("warning", message, file, line, col, endLine, endColumn, code);
     }
 
     public void WriteInfo(string message)
@@ -96,6 +90,30 @@ public class GithubActionsOutput : IOutput
             Console.WriteLine($"::set-output name=badge::{result.Badge}");
             Console.WriteLine($"::set-output name=message::{result.Message}");
         }
+
+        var summary = $"""
+                       ![Documentation coverage {result.AnalyzerResult.DocumentedPercentageDisplay}%]({result.Badge})
+                       
+                       {result.Message}
+                       """;
+
+        Environment.SetEnvironmentVariable("GITHUB_STEP_SUMMARY", summary);
+    }
+
+    public void OpenGroup(string title, string? key = null)
+    {
+        Write("group", title);
+    }
+
+    public void CloseGroup(string? key = null)
+    {
+        Write("endgroup", "");
+    }
+
+    public void SetProgress(int total, int current, string? message = null)
+    {
+        // GitHub Actions does not support progress reporting
+        // To not spam the log, we ignore this
     }
 
     public void Dispose()

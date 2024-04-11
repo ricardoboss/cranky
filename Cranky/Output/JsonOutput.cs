@@ -14,7 +14,8 @@ public class JsonOutput : IOutput
         public int? Col { get; set; }
         public int? EndLine { get; set; }
         public int? EndColumn { get; set; }
-        public string? Title { get; set; }
+        public string? Code { get; set; }
+        public string? Key { get; set; }
     }
 
     private class OutputAggregate
@@ -26,7 +27,7 @@ public class JsonOutput : IOutput
     private readonly OutputAggregate aggregate = new();
 
     public void WriteError(string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
+        int? endColumn = null, string? code = null)
     {
         aggregate.Messages.Add(new()
         {
@@ -37,12 +38,12 @@ public class JsonOutput : IOutput
             Col = col,
             EndLine = endLine,
             EndColumn = endColumn,
-            Title = title,
+            Code = code,
         });
     }
 
     public void WriteWarning(string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
+        int? endColumn = null, string? code = null)
     {
         aggregate.Messages.Add(new()
         {
@@ -53,23 +54,7 @@ public class JsonOutput : IOutput
             Col = col,
             EndLine = endLine,
             EndColumn = endColumn,
-            Title = title,
-        });
-    }
-
-    public void WriteNotice(string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
-    {
-        aggregate.Messages.Add(new()
-        {
-            Type = "notice",
-            Message = message,
-            File = file,
-            Line = line,
-            Col = col,
-            EndLine = endLine,
-            EndColumn = endColumn,
-            Title = title,
+            Code = code,
         });
     }
 
@@ -94,6 +79,30 @@ public class JsonOutput : IOutput
     public void SetResult(AnalyzeCommandResult result)
     {
         aggregate.Result = result.ToJson();
+    }
+
+    public void OpenGroup(string title, string? key = null)
+    {
+        aggregate.Messages.Add(new()
+        {
+            Type = "group",
+            Message = title,
+            Key = key,
+        });
+    }
+
+    public void CloseGroup(string? key = null)
+    {
+        aggregate.Messages.Add(new()
+        {
+            Type = "endgroup",
+            Key = key,
+        });
+    }
+
+    public void SetProgress(int total, int current, string? message = null)
+    {
+        // Ignore for JSON output as it isn't logged in a streaming fashion.
     }
 
     public void Dispose()

@@ -5,12 +5,12 @@ namespace Cranky.Output;
 public static class OutputExtensions
 {
     public static void WriteErrorEscaped(this IOutput output, string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
+        int? endColumn = null, string? code = null)
     {
         if (output is AnsiConsoleOutput)
             message = message.EscapeMarkup();
 
-        output.WriteError(message, file, line, col, endLine, endColumn, title);
+        output.WriteError(message, file, line, col, endLine, endColumn, code);
     }
 
     public static void WriteDebugEscaped(this IOutput output, string message)
@@ -29,21 +29,12 @@ public static class OutputExtensions
         output.WriteInfo(message);
     }
 
-    public static void WriteNoticeEscaped(this IOutput output, string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
-    {
-        if (output is AnsiConsoleOutput)
-            message = message.EscapeMarkup();
-
-        output.WriteNotice(message, file, line, col, endLine, endColumn, title);
-    }
-
     public static void WriteWarningEscaped(this IOutput output, string message, string? file = null, int? line = null, int? col = null, int? endLine = null,
-        int? endColumn = null, string? title = null)
+        int? endColumn = null, string? code = null)
     {
         if (output is AnsiConsoleOutput)
             message = message.EscapeMarkup();
 
-        output.WriteWarning(message, file, line, col, endLine, endColumn, title);
+        output.WriteWarning(message, file, line, col, endLine, endColumn, code);
     }
 }

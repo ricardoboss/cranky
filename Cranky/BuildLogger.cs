@@ -33,7 +33,7 @@ public class BuildLogger(IOutput output) : ILogger
 
     private void OnWarningRaised(object sender, BuildWarningEventArgs e)
     {
-        output.WriteWarningEscaped(e.Message);
+        output.WriteWarningEscaped(e.Message, e.File, e.LineNumber, e.ColumnNumber, e.EndLineNumber, e.EndColumnNumber, e.Code);
     }
 
     private void OnErrorRaised(object sender, BuildErrorEventArgs e)

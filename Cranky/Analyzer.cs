@@ -7,29 +7,47 @@ using NuGet.Frameworks;
 
 namespace Cranky;
 
-internal class Analyzer(IEnumerable<FileSystemInfo> files, IOutput output, bool buildLogging)
+internal class Analyzer(IReadOnlyCollection<FileSystemInfo> projectFiles, IOutput output, bool buildLogging)
 {
     public async Task<AnalyzerResult> AnalyzeAsync(CancellationToken cancellationToken = default)
     {
         var total = 0;
         var undocumented = 0;
 
-        foreach (var projectFile in files)
+        foreach (var projectFile in projectFiles)
         {
             var projectFilePath = projectFile.FullName.Replace("\\", "/").Replace("/", Path.DirectorySeparatorChar.ToString());
 
-            output.WriteDebug("Analyzing project: " + projectFilePath);
+            output.OpenGroup("Analyzing project: " + projectFilePath);
 
-            foreach (var file in GetSourceFiles(projectFilePath, cancellationToken))
+            var sourceFiles = GetSourceFiles(projectFilePath, cancellationToken).ToList();
+            var totalFiles = sourceFiles.Count;
+            var reportedFiles = 0;
+
+            foreach (var sourceFile in sourceFiles)
             {
-                if (!file.Exists)
-                    continue;
+                if (!sourceFile.Exists)
+                {
+                    totalFiles--;
 
-                var result = await AnalyzeFileAsync(file, cancellationToken);
+                    continue;
+                }
+
+                var result = await AnalyzeFileAsync(sourceFile, cancellationToken);
 
                 total += result.PublicMembers.Count;
                 undocumented += result.UndocumentedMembers.Count;
+
+                output.SetProgress(totalFiles, ++reportedFiles);
             }
+
+            if (totalFiles == 0)
+            {
+                output.WriteWarning("No source files analyzed.");
+            } else if (reportedFiles != totalFiles)
+                output.SetProgress(totalFiles, totalFiles);
+
+            output.CloseGroup();
         }
 
         return new(total, undocumented);

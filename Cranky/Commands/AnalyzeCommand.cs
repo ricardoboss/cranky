@@ -57,7 +57,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
             if (solutionFile is null && projectFile is null)
             {
-                output.WriteError("Either a project or solution file must be specified.");
+                output.SetFailed("Either a project or solution file must be specified.");
 
                 return 1;
             }
@@ -65,7 +65,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         if (projectFile is not null && solutionFile is not null)
         {
-            output.WriteError("Only one of a project or solution file can be specified.");
+            output.SetFailed("Only one of a project or solution file can be specified.");
 
             return 1;
         }
@@ -77,7 +77,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
             var percentages = settings.Percentages.Split(',').Select(int.Parse).ToArray();
             if (percentages.Length != 2)
             {
-                output.WriteError("Percentages must be specified as two comma-separated integers.");
+                output.SetFailed("Percentages must be specified as two comma-separated integers.");
 
                 return 1;
             }
@@ -87,7 +87,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         }
         catch (Exception ex)
         {
-            output.WriteError(ex.Message);
+            output.SetFailed(ex.Message);
 
             return 1;
         }
@@ -96,9 +96,9 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         output.WriteDebug($"Acceptable documentation coverage: {okPct:P0}");
 
         var projectFiles = LoadProjects(output, solutionFile, projectFile, excludedProjectPatterns).ToList();
-        if (!projectFiles.Any())
+        if (projectFiles.Count == 0)
         {
-            output.WriteError("No solution or project file found.");
+            output.SetFailed("No solution or project file found.");
 
             return 1;
         }
@@ -182,7 +182,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
 
         var regexes = excludedProjectsPatterns.Select(p => new Regex("^" + Regex.Escape(p).Replace("\\*", ".*").Replace("\\?", ".") + "$")).ToArray();
 
-        output.WriteDebug($"Applying {excludedProjectsPatterns.Length} project exclude patterns:");
+        output.WriteDebug($"Applying {excludedProjectsPatterns.Length} project exclude pattern{(excludedProjectsPatterns.Length == 1 ? "" : "s")}:");
         foreach (var excludePattern in regexes)
             output.WriteDebug($"  {excludePattern}");
 
@@ -203,7 +203,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
             new("2eff6e4d-ff75-4adf-a9be-74bec0b0aff8"), // Class library
         ];
 
-        output.WriteInfo($"Loading solution: {solutionFile.FullName}");
+        output.OpenGroup($"Loading solution: {solutionFile.FullName}", "solution");
 
         var solution = DotNetSolution.Load(solutionFile.FullName);
 
@@ -215,6 +215,8 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeCommand.Settings>
         output.WriteDebug($"Found {projects.Count} projects in solution:");
         foreach (var project in projects)
             output.WriteDebug($"  {project.Path}");
+
+        output.CloseGroup("solution");
 
         return projects.Select(p => new FileInfo(p.Path));
     }
