@@ -2,6 +2,12 @@
 
 Cranky is a command-line tool for analyzing the documentation coverage of public APIs in your .NET projects and solutions. It helps you ensure that your public APIs are adequately documented. This README provides an overview of how to use Cranky and its features.
 
+## Installation
+
+```shell
+dotnet tool install -g cranky
+```
+
 ## Features
 
 Cranky supports the following command-line arguments:
